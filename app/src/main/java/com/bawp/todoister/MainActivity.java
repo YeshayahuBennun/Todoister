@@ -10,17 +10,21 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "ITEM";
     private TaskViewModel taskViewModel;
 
     @Override
@@ -34,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.getApplication())
                 .create(TaskViewModel.class);
 
+        taskViewModel.getAllTasks().observe(this, tasks -> {
+            for (Task task : tasks) {
+                Log.d(TAG, "onCreate: " + task.getTaskId());
+            }
+        });
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
