@@ -6,10 +6,12 @@ import com.bawp.todoister.adapter.RecyclerViewAdapter;
 import com.bawp.todoister.model.Priority;
 import com.bawp.todoister.model.Task;
 import com.bawp.todoister.model.TaskViewModel;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerViewAdapter recycleViewAdapter;
     private int counter;
+    BottomSheetFragment bottomSheetFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         counter = 0;
+
+        bottomSheetFragment = new BottomSheetFragment();
+        ConstraintLayout constraintLayout = findViewById(R.id.bottomSheet);
+        BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(constraintLayout);
+        bottomSheetBehavior.setPeekHeight(BottomSheetBehavior.STATE_HIDDEN);
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -50,9 +58,14 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            Task task = new Task("Task " + counter++, Priority.MEDIUM, Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), false);
-            TaskViewModel.insert(task);
+//            Task task = new Task("Task " + counter++, Priority.MEDIUM, Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), false);
+//            TaskViewModel.insert(task);
+            showBottomSheetDialog();
         });
+    }
+
+    private void showBottomSheetDialog() {
+        bottomSheetFragment.show(getSupportFragmentManager(),bottomSheetFragment.getTag());
     }
 
     @Override
