@@ -2,6 +2,7 @@ package com.bawp.todoister;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class BottomSheetFragment extends BottomSheetDialogFragment {
     private EditText enterTodo;
@@ -35,6 +37,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     private ImageButton saveButton;
     private CalendarView calendarView;
     private Group calendarGroup;
+    private Date dueDate;
+    private Calendar calendar = Calendar.getInstance();
 
     public BottomSheetFragment() {
     }
@@ -54,6 +58,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         priorityButton = view.findViewById(R.id.priority_todo_button);
         priorityRadioGroup = view.findViewById(R.id.radioGroup_priority);
 
+
         Chip todayChip = view.findViewById(R.id.today_chip);
         Chip tomorrowChip = view.findViewById(R.id.tomorrow_chip);
         Chip nextWeekChip = view.findViewById(R.id.next_week_chip);
@@ -64,12 +69,25 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        calendarButton.setOnClickListener(view12 -> {
+            calendarGroup.setVisibility(
+                    calendarGroup.getVisibility() == View.GONE ? View.VISIBLE : View.GONE
+            );
+        });
+
+        calendarView.setOnDateChangeListener((calendarView, year, month, dayOfMonth) -> {
+            calendar.clear();
+            calendar.set(year, month, dayOfMonth);
+            dueDate = calendar.getTime();
+            //Log.d("Cal", "onViewCreated ===> month " + (month+1) + ", dayOfMonth " + dayOfMonth);
+        });
+
         saveButton.setOnClickListener(v -> {
             String task = enterTodo.getText().toString().trim();
-            if (!TextUtils.isEmpty(task)) {
+            if (!TextUtils.isEmpty(task) && dueDate != null) {
                 Task myTask = new Task(task,
                         Priority.HIGH,
-                        Calendar.getInstance().getTime(),
+                        dueDate,
                         Calendar.getInstance().getTime(),
                         false);
 
