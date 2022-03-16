@@ -2,6 +2,7 @@ package com.bawp.todoister;
 
 import android.os.Bundle;
 
+import com.bawp.todoister.adapter.OnTodoClickListener;
 import com.bawp.todoister.adapter.RecyclerViewAdapter;
 import com.bawp.todoister.model.Priority;
 import com.bawp.todoister.model.Task;
@@ -16,12 +17,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.Calendar;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnTodoClickListener {
 
     private static final String TAG = "ITEM";
     private TaskViewModel taskViewModel;
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 .create(TaskViewModel.class);
 
         taskViewModel.getAllTasks().observe(this, tasks -> {
-            recycleViewAdapter = new RecyclerViewAdapter(tasks);
+            recycleViewAdapter = new RecyclerViewAdapter(tasks,this);
             recyclerView.setAdapter(recycleViewAdapter);
         });
 
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showBottomSheetDialog() {
-        bottomSheetFragment.show(getSupportFragmentManager(),bottomSheetFragment.getTag());
+        bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
     }
 
     @Override
@@ -88,5 +90,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTodoClick(int adapterPosition, Task task) {
+        Log.d("Click", "onTodoClick: " + task.getTask());
     }
 }
