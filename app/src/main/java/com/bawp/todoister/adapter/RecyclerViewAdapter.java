@@ -21,7 +21,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private final List<Task> taskList;
     private final OnTodoClickListener todoClickListener;
 
-    public RecyclerViewAdapter(List<Task> taskList,OnTodoClickListener onTodoClickListener) {
+    public RecyclerViewAdapter(List<Task> taskList, OnTodoClickListener onTodoClickListener) {
         this.taskList = taskList;
         todoClickListener = onTodoClickListener;
     }
@@ -66,16 +66,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             this.onTodoClickListener = todoClickListener;
 
             itemView.setOnClickListener(this);
+            radioButton.setOnClickListener(this);
 
 
         }
 
         @Override
         public void onClick(View v) {
+            Task currTask = taskList.get(getAdapterPosition());
             int id = v.getId();
-            if(id==R.id.todo_row_layout){
-                Task currTask = taskList.get(getAdapterPosition());
-                onTodoClickListener.onTodoClick(getAdapterPosition(),currTask);
+            if (id == R.id.todo_row_layout) {
+                onTodoClickListener.onTodoClick(getAdapterPosition(), currTask);
+            } else if (id == R.id.todo_radio_button) {
+                onTodoClickListener.onTodoRadioButtonClick(currTask);
             }
 
         }
