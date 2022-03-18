@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.bawp.todoister.adapter.OnTodoClickListener;
 import com.bawp.todoister.adapter.RecyclerViewAdapter;
 import com.bawp.todoister.model.Priority;
+import com.bawp.todoister.model.SharedViewModel;
 import com.bawp.todoister.model.Task;
 import com.bawp.todoister.model.TaskViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -13,6 +14,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements OnTodoClickListen
     private RecyclerViewAdapter recycleViewAdapter;
     private int counter;
     BottomSheetFragment bottomSheetFragment;
+    private SharedViewModel sharedViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +56,12 @@ public class MainActivity extends AppCompatActivity implements OnTodoClickListen
                 MainActivity.this.getApplication())
                 .create(TaskViewModel.class);
 
+        sharedViewModel = new ViewModelProvider(this)
+                .get(SharedViewModel.class);
+
+
         taskViewModel.getAllTasks().observe(this, tasks -> {
-            recycleViewAdapter = new RecyclerViewAdapter(tasks,this);
+            recycleViewAdapter = new RecyclerViewAdapter(tasks, this);
             recyclerView.setAdapter(recycleViewAdapter);
         });
 
@@ -93,8 +100,10 @@ public class MainActivity extends AppCompatActivity implements OnTodoClickListen
     }
 
     @Override
-    public void onTodoClick(int adapterPosition, Task task) {
-        Log.d("Click", "onTodoClick: " + task.getTask());
+    public void onTodoClick( Task task) {
+        sharedViewModel.selectItem(task);
+        //Log.d("Click", "onTodoClick: " + task.getTask());
+        showBottomSheetDialog();
     }
 
     @Override
