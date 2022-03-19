@@ -42,6 +42,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
     private Date dueDate;
     private Calendar calendar = Calendar.getInstance();
     private SharedViewModel sharedViewModel;
+    private boolean isEdit;
 
     public BottomSheetFragment() {
     }
@@ -72,14 +73,23 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (sharedViewModel.getSelectedItem().getValue() != null) {
+
+            isEdit = sharedViewModel.getIsEdit();
+            Task task = sharedViewModel.getSelectedItem().getValue();
+            Log.d("MY", "onViewCreated: " + task.getTask());
+        }
+    }
+
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         sharedViewModel = new ViewModelProvider(requireActivity())
                 .get(SharedViewModel.class);
-        if(sharedViewModel.getSelectedItem().getValue()!=null){
-            Task task  = sharedViewModel.getSelectedItem().getValue();
-            Log.d("MY", "onViewCreated: "+task.getTask());
-        }
+
         calendarButton.setOnClickListener(view12 -> {
             calendarGroup.setVisibility(
                     calendarGroup.getVisibility() == View.GONE ? View.VISIBLE : View.GONE
@@ -102,7 +112,17 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
                         Calendar.getInstance().getTime(),
                         false);
 
-                TaskViewModel.insert(myTask);
+                if(isEdit){
+                    Task updateTask = sharedViewModel.getSelectedItem().getValue();
+                    updateTask.setTask(task);
+                    updateTask.setDateCreated(Calendar.getInstance().getTime());
+                    updateTask.setPriority(Priority.HIGH);
+                    updateTask.setDueDate(dueDate);
+                    TaskViewModel.update(updateTask);
+                    sharedViewModel.setIsEdit(false);
+                }else
+                    TaskViewModel.insert(myTask);
+
             }
         });
 
@@ -115,17 +135,17 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
             //set the date for today
             calendar.add(Calendar.DAY_OF_YEAR, 0);//the zero represents today
             dueDate = calendar.getTime();
-            Log.d("TIME", "onClick: "+dueDate.toString());
+            Log.d("TIME", "onClick: " + dueDate.toString());
         } else if (id == R.id.tomorrow_chip) {
             //set the date for tomorrow
             calendar.add(Calendar.DAY_OF_YEAR, 1);//1 represents tomorrow
             dueDate = calendar.getTime();
-            Log.d("TIME", "onClick: "+dueDate.toString());
+            Log.d("TIME", "onClick: " + dueDate.toString());
         } else if (id == R.id.next_week_chip) {
             //set the date for next week
             calendar.add(Calendar.DAY_OF_YEAR, 7);//7 represents next week
             dueDate = calendar.getTime();
-            Log.d("TIME", "onClick: "+dueDate.toString());
+            Log.d("TIME", "onClick: " + dueDate.toString());
         }
 
     }
