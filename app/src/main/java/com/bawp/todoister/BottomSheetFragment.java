@@ -16,8 +16,10 @@ import com.bawp.todoister.model.Priority;
 import com.bawp.todoister.model.SharedViewModel;
 import com.bawp.todoister.model.Task;
 import com.bawp.todoister.model.TaskViewModel;
+import com.bawp.todoister.util.Utils;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
+import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.Group;
@@ -94,6 +96,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
             calendarGroup.setVisibility(
                     calendarGroup.getVisibility() == View.GONE ? View.VISIBLE : View.GONE
             );
+            Utils.hideSoftKeyboard(view12);
         });
 
         calendarView.setOnDateChangeListener((calendarView, year, month, dayOfMonth) -> {
@@ -112,7 +115,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
                         Calendar.getInstance().getTime(),
                         false);
 
-                if(isEdit){
+                if (isEdit) {
                     Task updateTask = sharedViewModel.getSelectedItem().getValue();
                     updateTask.setTask(task);
                     updateTask.setDateCreated(Calendar.getInstance().getTime());
@@ -120,9 +123,16 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
                     updateTask.setDueDate(dueDate);
                     TaskViewModel.update(updateTask);
                     sharedViewModel.setIsEdit(false);
-                }else
+                } else {
                     TaskViewModel.insert(myTask);
-
+                }
+                enterTodo.setText("");
+                if(this.isVisible()){
+                    this.dismiss();
+                }
+            } else {
+                Snackbar.make(saveButton, R.string.empty_field, Snackbar.LENGTH_LONG)
+                        .show();
             }
         });
 
